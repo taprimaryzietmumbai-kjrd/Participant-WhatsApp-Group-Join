@@ -21,7 +21,7 @@ function parseGViz(raw){const a=raw.indexOf('{'),b=raw.lastIndexOf('}');if(a<0||
 function render(){results.replaceChildren();selected.classList.add('hidden');const q=norm(search.value);if(!q){message('Live participant data ready: '+people.length+' participants. Type at least 2 characters to search.');return}if(q.length<2){message('Type at least 2 characters to search.');return}const found=people.filter(p=>norm(p.name+' '+p.school).includes(q)).slice(0,40);if(!found.length){message('No matching participant found. Try another spelling or search by school name.','warn');return}message(found.length+' matching result'+(found.length===1?'':'s')+(found.length===40?' (showing first 40)':'')+'. Select your own name.');for(const p of found){const b=document.createElement('button');b.type='button';b.className='person';const av=document.createElement('span');av.className='avatar';av.textContent=p.name.split(/\s+/).slice(0,2).map(x=>x[0]||'').join('').toUpperCase();const info=document.createElement('span');info.className='info';const n=document.createElement('div');n.className='name';n.textContent=p.name;const s=document.createElement('div');s.className='school';s.textContent=p.school||'School not listed';info.append(n,s);const arrow=document.createElement('span');arrow.textContent='›';b.append(av,info,arrow);b.addEventListener('click',()=>{document.getElementById('selectedName').textContent=p.name;document.getElementById('selectedSchool').textContent=p.school||'School not listed in the sheet';document.getElementById('join').href=GROUP_URL;selected.classList.remove('hidden')});results.append(b)}}
 async function load(){try{const url='https://docs.google.com/spreadsheets/d/'+SHEET_ID+'/gviz/tq?tqx=out:json&_='+Date.now();const res=await fetch(url,{cache:'no-store'});if(!res.ok)throw Error('Google Sheets returned HTTP '+res.status+'.');people=parseGViz(await res.text());search.disabled=false;render()}catch(e){console.error(e);message('Could not load live participant data. Check that the sheet is shared as “Anyone with the link – Viewer”, and that its first row contains a participant-name heading. Then reload. Details: '+(e.message||'Network or access error.'),'error')}}
 search.addEventListener('input',render);load()
-})();
+
 
 /* KVS directory copied from the working Facilitation Hub source.
    Principal name, official email and phone are looked up by selected KV. */
@@ -46,7 +46,7 @@ const kvLookup = (() => {
     }
     return null;
   }};
-})();
+
 const principalPanel = document.createElement("section");
 principalPanel.className = "selected";
 principalPanel.style.marginTop = "16px";
@@ -94,4 +94,5 @@ const originalResultsObserver = new MutationObserver(() => {
   });
 });
 originalResultsObserver.observe(results,{childList:true});
+})();
 </script></body></html>
